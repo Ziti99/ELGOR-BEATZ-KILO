@@ -8,12 +8,39 @@ import { TraditionModerniteRibbon } from '@/components/GabonHeritageMotifs';
 
 export default function HomePage() {
   const [scrollY, setScrollY] = useState(0);
+  const [isClient, setIsClient] = useState(false);
 
+  // OPTIMISATION: Throttler le scroll avec un délai minimum
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    setIsClient(true);
+    let lastScroll = 0;
+    let timeoutId: NodeJS.Timeout;
+
+    const handleScroll = () => {
+      const now = Date.now();
+      // Mise à jour maximum toutes les 16ms (60fps)
+      if (now - lastScroll > 16) {
+        setScrollY(window.scrollY);
+        lastScroll = now;
+      } else {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          setScrollY(window.scrollY);
+        }, 16 - (now - lastScroll));
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(timeoutId);
+    };
   }, []);
+
+  // OPTIMISATION: Ne pas rendre le header si pas encore hydraté
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <div id="main-content" className="min-h-screen bg-cream text-ink relative scroll-mt-28">
@@ -23,7 +50,7 @@ export default function HomePage() {
 
       <TraditionModerniteRibbon />
 
-    <section className="relative py-36 md:py-44 px-4 sm:px-6 lg:px-8 border-t border-stone-900/[0.07] overflow-hidden">
+      <section className="relative py-36 md:py-44 px-4 sm:px-6 lg:px-8 border-t border-stone-900/[0.07] overflow-hidden">
         <div className="absolute top-0 right-0 w-[min(560px,92vw)] h-[min(560px,92vw)] bg-[radial-gradient(circle,rgba(201,162,39,0.07),transparent_62%),radial-gradient(circle,rgba(107,33,168,0.05),transparent_58%)] pointer-events-none" />
         <div className="max-w-7xl mx-auto relative">
           <Reveal delayMs={0}>
