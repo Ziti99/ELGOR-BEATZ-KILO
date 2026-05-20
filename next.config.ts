@@ -1,15 +1,43 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  images: {
-    remotePatterns: [
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  
+  // Security headers
+  async headers() {
+    return [
       {
-        protocol: 'https',
-        hostname: 'img.youtube.com',
-        pathname: '/vi/**',
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
+          },
+        ],
       },
-    ],
-    unoptimized: false,
+    ];
+  },
+
+  // CORS configuration
+  async rewrites() {
+    return {
+      beforeFiles: [],
+    };
   },
 };
 
