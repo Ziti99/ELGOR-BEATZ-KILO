@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "init-db": "npx tsx scripts/init-db.ts",
-    "compress-images": "npx tsx scripts/compress-images.ts"
+    "compress-images": "npx tsx scripts/compress-images.ts",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "mysql2": "^3.11.5",
@@ -20,6 +21,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@next/bundle-analyzer": "^15.4.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
